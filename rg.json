@@ -1,0 +1,84 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location" : {
+            "type" : "string",
+            "defaultValue" : "[resourceGroup().location]",
+            "metadata" : {
+                "description" : "location for all resources"
+            }
+        }     
+    },
+    "functions": [],
+    "variables": {
+        "vnet" : "VirtualNetwork",
+        "snet" : "Gatewaysubnet",
+        "nsg" : "NetworkSecurityGroup",
+        "rtable" : "RouteTable"
+
+    },
+    "resources": [
+        {
+            "name": "[variables('vnet')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-11-01",
+            "location": "[parameters('location')]",
+            "tags": {
+                "displayName": "virtualNetwork1"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('snet')]",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[variables('nsg')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-11-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "nsgRule1",
+                        "properties": {
+                            "description": "description",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[variables('rtable')]",
+            "type": "Microsoft.Network/routeTables",
+            "apiVersion": "2019-11-01",
+            "location": "[parameters('location')]",
+            "tags": {
+            },
+            "properties": {
+                "disableBgpRoutePropagation": true
+            }
+        }
+
+    ],
+    "outputs": {}
+}
